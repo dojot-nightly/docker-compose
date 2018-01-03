@@ -27,8 +27,9 @@ services:
 #      STH_HOST: "0.0.0.0"
 #      DB_URI: "mongodb:27017"
 
-  persister:
-    image: dojot/persister:0.2.0-nightly20171228
+  sth:
+    image: telefonicaiot/fiware-sth-comet
+    restart: always
     depends_on:
       - mongodb
     networks:
@@ -40,7 +41,7 @@ services:
       STH_HOST: "0.0.0.0"
       DB_URI: "mongodb:27017"
 
-  mongodb:
+ mongodb:
     image: "mongo:3.2"
     restart: always
     user: "mongodb"
