@@ -13,20 +13,6 @@ services:
 #      - /etc/letsencrypt:/certs
 #      - ./certs/default.conf:/etc/nginx/conf.d/default.conf
 
-#  sth:
-#    image: telefonicaiot/fiware-sth-comet
-#    restart: always
-#    depends_on:
-#      - mongodb
-#    networks:
-#      default:
-#        aliases:
-#          - comet
-#          - history
-#    environment:
-#      STH_HOST: "0.0.0.0"
-#      DB_URI: "mongodb:27017"
-
   sth:
     image: telefonicaiot/fiware-sth-comet
     restart: always
@@ -41,7 +27,7 @@ services:
       STH_HOST: "0.0.0.0"
       DB_URI: "mongodb:27017"
 
- mongodb:
+  mongodb:
     image: "mongo:3.2"
     restart: always
     user: "mongodb"
