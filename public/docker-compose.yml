@@ -34,9 +34,14 @@ services:
 
   mqtt:
     image: ansi/mosquitto
+    # If TLS is needed, use the image below
+    #image: dojot/mqtt-manager
     restart: always
+    volumes:
+      - ./mqtt/mosquitto.conf:/usr/local/src/mosquitto-1.4.13/mosquitto.conf:Z
     ports:
-      - "1883:1883"
+      - "1883:1883"   # for clear MQTT
+      #- "8883:8883"  # for MQTT over TLS
 
   iotagent:
     image: dojot/iotagent-json:0.2.0-nightly20171113
@@ -45,7 +50,9 @@ services:
       - mongodb
       - mqtt
     volumes:
-      - ./iotagent/config.js:/opt/iotajson/config.js:Z
+      - ./iotagent/config.json:/opt/iotagent-json/config.json:Z
+    environment:
+       MQTT_TLS: "false"
     networks:
       default:
         aliases:
@@ -78,6 +85,8 @@ services:
     restart: always
     depends_on:
       - mongodb
+      - orion
+      - kafka
     networks:
       default:
         aliases:
@@ -88,6 +97,7 @@ services:
     restart: always
     depends_on:
       - apigw
+      - postgres
       - redis
     depends_on:
       postgres:
@@ -116,7 +126,7 @@ services:
       retries: 5
 
   kong-migration:
-    image: dojot/kong:0.2.0-nightly20171113
+    image: dojot/kong:latest
     depends_on:
       postgres:
         condition: service_healthy
@@ -126,7 +136,7 @@ services:
     command: kong migrations up
 
   apigw:
-    image: dojot/kong:0.2.0-nightly20171113
+    image: dojot/kong:latest
     restart: always
     depends_on:
       postgres:
@@ -187,27 +197,35 @@ services:
       ZOOKEEPER_IP: zookeeper
       KAFKA_NUM_PARTITIONS: 10
 
-  cassandra:
-    image: "cassandra:3.10"
+  ejbca:
+    image: "dojot/ejbca"
 
-  ma_redis:
-    image: "redis:3.2.8"
-    volumes:
-      - ./ma/redis.conf:/usr/local/etc/redis/redis.conf
-      - ./ma/sentinel.conf:/usr/local/etc/redis/sentinel.conf
-      - ./ma/redis_init.sh:/usr/local/etc/redis/redis_init.sh
-    command: sh -c "chmod +x /usr/local/etc/redis/redis_init.sh && /usr/local/etc/redis/redis_init.sh"
+#  ma_redis:
+#    image: "redis:3.2.8"
+#    volumes:
+#      - ./ma/redis.conf:/usr/local/etc/redis/redis.conf
+#      - ./ma/sentinel.conf:/usr/local/etc/redis/sentinel.conf
+#      - ./ma/redis_init.sh:/usr/local/etc/redis/redis_init.sh
+#    command: sh -c "chmod +x /usr/local/etc/redis/redis_init.sh && /usr/local/etc/redis/redis_init.sh"
 
-  kerberos:
-    image: "dojot/kerberos:0.2.0-nightly20171113"
-    environment:
-      - CASSANDRA_HOSTNAME=cassandra
-      - CASSANDRA_PORT=9042
-    volumes:
-      - ./ma/node.config:/opt/jboss/wildfly/standalone/configuration/node.config
-      - ./ma/kafka.brokers:/opt/jboss/wildfly/standalone/configuration/kafka.brokers
-      - ./ma/redis.sentinels:/opt/jboss/wildfly/standalone/configuration/redis.sentinels
-    depends_on:
-      - kafka
-      - redis
-      - cassandra
+
+###
+# If mutual authentication is needed, please uncomment these two components below
+###
+
+#  kerberos:
+#    image: "dojot/kerberos"
+#    environment:
+#      - CASSANDRA_HOSTNAME=cassandra
+#      - CASSANDRA_PORT=9042
+#    volumes:
+#      - ./ma/node.config:/opt/jboss/wildfly/standalone/configuration/node.config
+#      - ./ma/kafka.brokers:/opt/jboss/wildfly/standalone/configuration/kafka.brokers
+#      - ./ma/redis.sentinels:/opt/jboss/wildfly/standalone/configuration/redis.sentinels
+#    depends_on:
+#      - kafka
+#      - redis
+#      - cassandra
+
+#  cassandra:
+#    image: "cassandra:3.10"
