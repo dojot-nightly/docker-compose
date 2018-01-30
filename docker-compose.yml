@@ -157,10 +157,6 @@ services:
     volumes:
       - ./apigw/plugins/pep-kong:/plugins/pep-kong
       - ./apigw/plugins/mutualauthentication:/plugins/mutualauthentication
-    networks:
-      default:
-        aliases:
-          - kong
 
   pdp-ws:
     image: dojot/pdp-ws:latest
