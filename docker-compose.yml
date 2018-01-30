@@ -162,6 +162,16 @@ services:
         aliases:
           - kong
 
+  pdp-ws:
+    image: dojot/pdp-ws:latest
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - "9763:9763"
+    volumes:
+      - ./pdpws/standalone.xml:/opt/jboss/wildfly/standalone/configuration/standalone.xml
+
   perseo-core:
     image: telefonicaiot/perseo-core
     restart: always

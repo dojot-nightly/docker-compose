@@ -76,7 +76,7 @@ checking out the appropriate tag (do notice that the tagname has to be replaced)
   of such releases, please check https://github.com/dojot/docker-compose/releases
 
 After the repository is cloned, and a release (or branch) has been selected, there are still
-a few external modules that must be gathered before using the platform. These modules can 
+a few external modules that must be gathered before using the platform. These modules can
 be retrieved by executing the following command: ::
 
   git submodule update --init --recursive
@@ -119,4 +119,3 @@ the API gateway must be configured. To do so, please run kong_config.sh,
 present at the root of the repository. ::
 
   ./kong.config.sh
-
