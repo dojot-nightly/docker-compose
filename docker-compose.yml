@@ -73,7 +73,7 @@ services:
         max-size: 100m
 
   gui:
-    image: dojot/gui:0.3.0-nightly20180425
+    image: dojot/gui:unfiltered-20180425
     restart: always
     logging:
       driver: json-file
