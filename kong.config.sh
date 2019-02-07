@@ -75,14 +75,13 @@ authConfig "device-manager"
     --header "Content-Type: application/json" \
     -d @- ) <<PAYLOAD
 {
-    "name": "image",
-    "uris": "/fw-image",
+    "name": "auth-permissions-service",
+    "uris": "/auth/pap",
     "strip_uri": true,
-    "upstream_url": "http://image-manager:5000"
+    "upstream_url": "http://auth:5000/pap"
 }
 PAYLOAD
-authConfig "image"
-
+authConfig  "auth-permissions-service"
 
 (curl -o /dev/null ${kong}/apis -s -S -X POST \
     --header "Content-Type: application/json" \
@@ -133,8 +132,8 @@ PAYLOAD
 authConfig "user-service"
 
 # -- end auth service --
-# mashup/flows service configuration
 
+# Flows
 (curl -o /dev/null ${kong}/apis -s -S -X POST \
     --header "Content-Type: application/json" \
     -d @- ) <<PAYLOAD
@@ -147,20 +146,7 @@ authConfig "user-service"
 PAYLOAD
 authConfig "flows"
 
-(curl -o /dev/null ${kong}/apis -s -S -X POST \
-    --header "Content-Type: application/json" \
-    -d @- ) <<PAYLOAD
-{
-    "name": "mashup",
-    "uris": ["/mashup"],
-    "strip_uri": true,
-    "upstream_url": "http://flowbroker:80"
-}
-PAYLOAD
-# authConfig "flows"
-
-# -- end mashup/flows --
-
+# History
 (curl -o /dev/null ${kong}/apis -s -S -X POST \
     --header "Content-Type: application/json" \
     -d @- ) <<PAYLOAD
@@ -186,20 +172,7 @@ authConfig "history"
 PAYLOAD
 authConfig "ejbca-paths"
 
-# Alarm manager endpoints
-(curl -o /dev/null ${kong}/apis -sS -X POST \
-    --header "Content-Type: application/json" \
-    -d @- ) <<PAYLOAD
-{
-     "name": "alarm-manager-endpoints",
-     "uris": "/alarmmanager",
-     "strip_uri": false,
-     "upstream_url": "http://alarm-manager:8080/"
- }
-PAYLOAD
-authConfig "alarm-manager-endpoints"
-
-# Configure a import and export endpoint
+# Configure import and export endpoint
 (curl -o /dev/null ${kong}/apis -sS -X POST \
     --header "Content-Type: application/json" \
     -d @- ) <<PAYLOAD
@@ -211,3 +184,27 @@ authConfig "alarm-manager-endpoints"
  }
 PAYLOAD
 authConfig "data-manager"
+
+# Configure a Backstage service
+(curl -o /dev/null ${kong}/apis -sS -X POST \
+    --header "Content-Type: application/json" \
+    -d @- ) <<PAYLOAD
+{
+     "name": "backstage",
+     "uris": [ "/checkconflicts"],
+     "strip_uri": false,
+     "upstream_url": "http://backstage:3005/"
+ }
+PAYLOAD
+authConfig "backstage"
+
+(curl -o /dev/null ${kong}/apis -sS -X POST \
+    --header "Content-Type: application/json" \
+    -d @- ) <<PAYLOAD
+{
+     "name": "backstage_graphql",
+     "uris": [ "/graphql/auth/","/graphql/permissions"],
+     "strip_uri": false,
+     "upstream_url": "http://backstage:3005/"
+ }
+PAYLOAD
