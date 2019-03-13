@@ -70,6 +70,17 @@ PAYLOAD
 PAYLOAD
 authConfig "device-manager"
 
+(curl -o /dev/null ${kong}/apis -s -S -X POST \
+    --header "Content-Type: application/json" \
+    -d @- ) <<PAYLOAD
+{
+    "name": "image",
+    "uris": "/fw-image",
+    "strip_uri": true,
+    "upstream_url": "http://image-manager:5000"
+}
+PAYLOAD
+authConfig "image"
 
 (curl -o /dev/null ${kong}/apis -s -S -X POST \
     --header "Content-Type: application/json" \
@@ -146,6 +157,21 @@ authConfig "user-service"
 PAYLOAD
 authConfig "flows"
 
+(curl -o /dev/null ${kong}/apis -s -S -X POST \
+    --header "Content-Type: application/json" \
+    -d @- ) <<PAYLOAD
+{
+    "name": "mashup",
+    "uris": ["/mashup"],
+    "strip_uri": true,
+    "upstream_url": "http://flowbroker:80"
+}
+PAYLOAD
+
+#authConfig "mashup"
+
+ # -- end mashup/flows --
+
 # History
 (curl -o /dev/null ${kong}/apis -s -S -X POST \
     --header "Content-Type: application/json" \
@@ -203,7 +229,7 @@ authConfig "backstage"
     -d @- ) <<PAYLOAD
 {
      "name": "backstage_graphql",
-     "uris": [ "/graphql/auth/","/graphql/permissions"],
+     "uris": [ "/graphql(.*)"],
      "strip_uri": false,
      "upstream_url": "http://backstage:3005/"
  }
