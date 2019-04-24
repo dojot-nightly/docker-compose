@@ -161,16 +161,12 @@ authConfig "flows"
     --header "Content-Type: application/json" \
     -d @- ) <<PAYLOAD
 {
-    "name": "mashup",
-    "uris": ["/mashup"],
+    "name": "flowsIcons",
+    "uris": ["/flows/icons"],
     "strip_uri": true,
-    "upstream_url": "http://flowbroker:80"
+    "upstream_url": "http://flowbroker:80/icons"
 }
 PAYLOAD
-
-#authConfig "mashup"
-
- # -- end mashup/flows --
 
 # History
 (curl -o /dev/null ${kong}/apis -s -S -X POST \
@@ -235,7 +231,7 @@ authConfig "backstage"
  }
 PAYLOAD
 
- # cron
+# cron
 (curl -o /dev/null ${kong}/apis -s -S -X POST \
     --header "Content-Type: application/json" \
     -d @- ) <<PAYLOAD
